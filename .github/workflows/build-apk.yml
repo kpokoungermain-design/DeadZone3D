@@ -1,0 +1,41 @@
+
+name: Compiler DeadZone3D APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+
+      - name: Decompresser le ZIP
+        run: unzip DeadZone3D.zip -d source
+
+      - name: Installer Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Installer Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.0'
+
+      - name: Compiler le jeu Android
+        run: |
+          cd source/DeadZone3D
+          gradle assembleDebug --no-daemon
+
+      - name: Recuperer le fichier APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeadZone3D-APK
+          path: source/DeadZone3D/app/build/outputs/apk/debug/*.apk
+          
